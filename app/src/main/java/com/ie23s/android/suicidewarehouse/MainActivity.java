@@ -1,15 +1,13 @@
 package com.ie23s.android.suicidewarehouse;
 
-import androidx.appcompat.app.AppCompatActivity;
-
+import android.content.Intent;
 import android.location.Location;
 import android.location.LocationListener;
+import android.os.Build;
 import android.os.Bundle;
 import android.widget.TextView;
 
-import com.ie23s.android.suicidewarehouse.utils.ConnectionUtil;
-import com.ie23s.android.suicidewarehouse.utils.geolocation.GeolocationCallback;
-import com.ie23s.android.suicidewarehouse.utils.geolocation.GeolocationUtil;
+import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity implements LocationListener {
     private TextView textView1;
@@ -18,10 +16,20 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         textView1 = findViewById(R.id.textview);
-        new ConnectionUtil().openConnection();
-        new Thread(() -> System.out.println("dfsfsdfds" + new ConnectionUtil().openConnection())).start();
+
+        //new ConnectionUtil().openConnection();
+        // Thread(() -> System.out.println("dfsfsdfds" + new ConnectionUtil().openConnection())).start();
         //GeolocationUtil geolocationUtil = new GeolocationUtil(this, this, 1);
         //geolocationUtil.init();
+        findViewById(R.id.button).setOnClickListener(l -> {
+            Intent intent = new Intent(this, MyIntentService.class);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                this.startForegroundService(intent);
+            } else {
+                this.startService(intent);
+            }
+
+        });
     }
 
     @Override

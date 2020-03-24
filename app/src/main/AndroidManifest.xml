@@ -6,6 +6,9 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
     <application
         android:allowBackup="true"
@@ -17,7 +20,8 @@
         tools:ignore="GoogleAppIndexingWarning">
         <service
             android:name=".MyIntentService"
-            android:exported="false"></service>
+            android:enabled="true"
+            android:exported="true" />
 
         <receiver android:name=".AutoStart"
             android:enabled="true"
