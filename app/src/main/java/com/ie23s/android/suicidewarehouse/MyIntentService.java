@@ -1,13 +1,16 @@
 package com.ie23s.android.suicidewarehouse;
 
 import android.app.IntentService;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
+import android.content.IntentFilter;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
+
+import com.ie23s.android.suicidewarehouse.io.ConnectionUtil;
+import com.ie23s.android.suicidewarehouse.io.SocketAsync;
+import com.ie23s.android.suicidewarehouse.utils.NotificationUtil;
 
 import java.lang.ref.WeakReference;
 
@@ -21,10 +24,22 @@ import java.lang.ref.WeakReference;
 public class MyIntentService extends IntentService {
     // TODO: Rename actions, choose action names that describe tasks that this
     // IntentService can perform, e.g. ACTION_FETCH_NEW_ITEMS
-    public static final String ACTION = "com.ie23s.android.myapplication.action.FOO";
+    public static final String ACTION_GET = "com.ie23s.android.suicidewarehouse.action.GET";
+    public static final String ACTION_SEND = "com.ie23s.android.suicidewarehouse.action.SEND";
     public static final String CHANNEL_ID = "ForegroundServiceChannels";
 
-    //SocketAsync d;
+    NotificationUtil notificationUtil;
+    ConnectionUtil connectionUtil;
+    SocketAsync socketAsync;
+
+    BroadcastReceiver mScreenStateReceiver = new BroadcastReceiver() {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            notificationUtil.updateNotify(intent.getStringExtra("name"));
+            //startForeground(1,notificationUtil.getNotification());
+        }
+    };
 
     public MyIntentService() {
         super("MyIntentService");
@@ -33,34 +48,33 @@ public class MyIntentService extends IntentService {
     public void onCreate() {
         super.onCreate();
 
+        IntentFilter filter = new IntentFilter(ACTION_GET);
+        registerReceiver(mScreenStateReceiver, filter);
+
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(mScreenStateReceiver);
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
-        NewMessageNotification  newMessageNotification = new NewMessageNotification(this,
+        notificationUtil = new NotificationUtil(this,
                "TAG!!!", "TEST_NOTIFY", 1);
-        newMessageNotification.create("Test", "Just stupid test");
-////        newMessageNotification.sendNotify();
-////
-        Log.d("Service", "Service started");
-//////        d = new SocketAsync(new IncomingHandler(this), newMessageNotification);
-//////        d.execute();
-        startForeground(1,newMessageNotification.getNotification());
+        notificationUtil.create("Test", "Connecting...");
+
+        connectionUtil = new ConnectionUtil();
+
+        socketAsync = new SocketAsync(new IncomingHandler(this), connectionUtil,
+                notificationUtil);
+        socketAsync.execute();
+
+        startForeground(1, notificationUtil.getNotification());
 
         return START_NOT_STICKY;
-    }
-
-    private void createNotificationChannel() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel serviceChannel = new NotificationChannel(
-                    CHANNEL_ID,
-                    "Foreground Service Channel",
-                    NotificationManager.IMPORTANCE_DEFAULT
-            );
-            NotificationManager manager = getSystemService(NotificationManager.class);
-            manager.createNotificationChannel(serviceChannel);
-        }
     }
 
     @Override

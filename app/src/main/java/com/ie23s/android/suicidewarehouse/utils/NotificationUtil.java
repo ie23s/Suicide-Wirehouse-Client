@@ -1,4 +1,4 @@
-package com.ie23s.android.suicidewarehouse;
+package com.ie23s.android.suicidewarehouse.utils;
 
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -9,7 +9,9 @@ import android.os.Build;
 
 import androidx.annotation.RequiresApi;
 
-public class NewMessageNotification {
+import com.ie23s.android.suicidewarehouse.R;
+
+public class NotificationUtil {
     private final String NOTIFICATION_TAG;
     private final String CHANEL_ID;
     private final Context context;
@@ -20,8 +22,8 @@ public class NewMessageNotification {
 
     private Notification notification;
 
-    public NewMessageNotification(final Context context, final String tag, final String channel_id,
-                                  int id) {
+    public NotificationUtil(final Context context, final String tag, final String channel_id,
+                            int id) {
         this.context = context;
         NOTIFICATION_TAG = tag;
         CHANEL_ID = channel_id;
@@ -45,7 +47,8 @@ public class NewMessageNotification {
         mChannel.enableLights(true);
         mChannel.setLightColor(Color.RED);
 
-        //mChannel.enableVibration(true);
+
+        mChannel.enableVibration(false);
         //mChannel.setVibrationPattern(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400});
         notificationManager.createNotificationChannel(mChannel);
 
@@ -60,7 +63,7 @@ public class NewMessageNotification {
 //                PendingIntent.FLAG_CANCEL_CURRENT);
 
         //.setContentIntent(contentIntent)
-        builder.setSmallIcon(R.drawable.ic_launcher_background)
+        builder.setSmallIcon(R.mipmap.ic_launcher_round)
                 // большая картинка
                 //.setLargeIcon(BitmapFactory.decodeResource(res, R.drawable.ic_action_stat_reply))
                 //.setTicker(res.getString(R.string.warning)) // текст в строке состояния
@@ -70,7 +73,9 @@ public class NewMessageNotification {
                 .setContentTitle(title)
                 //.setOngoing(true)
                 //.setContentText(res.getString(R.string.notifytext))
-                .setContentText(text);
+                .setContentText(text)
+
+                .setOnlyAlertOnce(true);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             builder.setChannelId(CHANEL_ID);
@@ -102,6 +107,7 @@ public class NewMessageNotification {
     public void updateNotify(String text) {
         builder.setContentText(text);
         build();
+        notification.defaults = 0;
         sendNotify();
     }
 

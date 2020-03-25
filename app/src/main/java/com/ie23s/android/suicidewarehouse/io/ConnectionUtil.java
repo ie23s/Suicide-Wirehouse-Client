@@ -3,10 +3,6 @@ package com.ie23s.android.suicidewarehouse.io;
 import com.ie23s.android.suicidewarehouse.utils.AESUtil;
 import com.ie23s.android.suicidewarehouse.utils.RSAUtil;
 
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
-import javax.crypto.spec.SecretKeySpec;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.InvalidKeyException;
@@ -14,9 +10,14 @@ import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.spec.InvalidKeySpecException;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.spec.SecretKeySpec;
+
 @SuppressWarnings("CharsetObjectCanBeUsed")
 public class ConnectionUtil {
-	private static final String ip = "localhost";
+    private static final String ip = "192.168.1.3";
 	private static final int port = 6319;
 	private static final String publicKeyString = "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCu5z/XcYbtZG/o" +
 			"NhJalO0kDYXFxNSZby3HBMfkYQpMlxhnI4caCC2XCI4vq2RKuMWMFOJT0Sv3pY5MWEnMqCWmi75fexLa0KZy" +
@@ -121,7 +122,7 @@ public class ConnectionUtil {
 		socketUtil.sendLine(message);
 	}
 
-	private byte[] getData() throws IOException, UnsignedExeption {
+    public byte[] getData() throws IOException, UnsignedExeption {
 		String message = socketUtil.readLine();
 		byte[] data = aesUtil.decrypt(message, aesSecBinserver);
 		byte[] decoded = new byte[data.length - 16];
@@ -129,4 +130,8 @@ public class ConnectionUtil {
 		System.arraycopy(data, 16, decoded, 0, decoded.length);
 		return decoded;
 	}
+
+    public void close() {
+        socketUtil.close();
+    }
 }

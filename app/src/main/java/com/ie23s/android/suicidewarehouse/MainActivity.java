@@ -9,8 +9,11 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.ie23s.android.suicidewarehouse.utils.SettingsUtil;
+
 public class MainActivity extends AppCompatActivity implements LocationListener {
     private TextView textView1;
+    private boolean s = true;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -22,14 +25,23 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         //GeolocationUtil geolocationUtil = new GeolocationUtil(this, this, 1);
         //geolocationUtil.init();
         findViewById(R.id.button).setOnClickListener(l -> {
-            Intent intent = new Intent(this, MyIntentService.class);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                this.startForegroundService(intent);
-            } else {
-                this.startService(intent);
+            if (s) {
+                Intent intent = new Intent(this, MyIntentService.class);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    this.startForegroundService(intent);
+                } else {
+                    this.startService(intent);
+                }
             }
+            s = false;
 
+//            Intent intentq = new Intent(MyIntentService.ACTION_GET);
+//            intentq.putExtra("name", "dsfds");
+//            this.sendBroadcast(intentq);
         });
+
+        SettingsUtil settingsUtil = new SettingsUtil(this);
+
     }
 
     @Override
