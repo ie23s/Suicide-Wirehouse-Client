@@ -1,9 +1,7 @@
 package com.ie23s.android.suicidewarehouse;
 
-import android.content.Intent;
 import android.location.Location;
 import android.location.LocationListener;
-import android.os.Build;
 import android.os.Bundle;
 import android.widget.TextView;
 
@@ -24,21 +22,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         // Thread(() -> System.out.println("dfsfsdfds" + new ConnectionUtil().openConnection())).start();
         //GeolocationUtil geolocationUtil = new GeolocationUtil(this, this, 1);
         //geolocationUtil.init();
-        findViewById(R.id.button).setOnClickListener(l -> {
-            if (s) {
-                Intent intent = new Intent(this, MyIntentService.class);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    this.startForegroundService(intent);
-                } else {
-                    this.startService(intent);
-                }
-            }
-            s = false;
-
-//            Intent intentq = new Intent(MyIntentService.ACTION_GET);
-//            intentq.putExtra("name", "dsfds");
-//            this.sendBroadcast(intentq);
-        });
+        //findViewById(R.id.button).setOnClickListener(l -> {});
 
         SettingsUtil settingsUtil = new SettingsUtil(this);
 
