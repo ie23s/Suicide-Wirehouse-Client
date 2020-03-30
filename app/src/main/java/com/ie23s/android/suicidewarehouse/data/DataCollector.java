@@ -16,14 +16,6 @@ public class DataCollector {
     private final Receiver receiver;
     private volatile boolean hasData = false;
     private volatile Data data;
-    private BroadcastReceiver mScreenStateReceiver = new BroadcastReceiver() {
-
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            data = (Data) intent.getSerializableExtra("DATA");
-            hasData = true;
-        }
-    };
 
     public DataCollector(final Context context, final boolean isService) {
         this.context = context;
@@ -69,6 +61,18 @@ public class DataCollector {
         hasData = false;
         return data;
     }
+
+    private BroadcastReceiver mScreenStateReceiver = new BroadcastReceiver() {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            data = (Data) intent.getSerializableExtra("DATA");
+            hasData = true;
+            if (receiver != null)
+                receiver.onReceive(data);
+            System.out.println("sdf" + data.getData());
+        }
+    };
 
     public interface Receiver {
         void onReceive(Data data);

@@ -2,12 +2,15 @@ package com.ie23s.android.suicidewarehouse;
 
 import android.app.IntentService;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Message;
 
 import com.ie23s.android.suicidewarehouse.data.DataCollector;
+import com.ie23s.android.suicidewarehouse.io.Auth;
 import com.ie23s.android.suicidewarehouse.io.ConnectionUtil;
 import com.ie23s.android.suicidewarehouse.io.SocketAsync;
+import com.ie23s.android.suicidewarehouse.io.SocketQuery;
 import com.ie23s.android.suicidewarehouse.utils.NotificationUtil;
 
 import java.lang.ref.WeakReference;
@@ -28,6 +31,7 @@ public class MyIntentService extends IntentService implements DataCollector.Rece
     NotificationUtil notificationUtil;
     ConnectionUtil connectionUtil;
     SocketAsync socketAsync;
+    SocketQuery socketQuery;
     DataCollector dataCollector;
 
     public MyIntentService() {
@@ -38,7 +42,6 @@ public class MyIntentService extends IntentService implements DataCollector.Rece
         super.onCreate();
 
         dataCollector = new DataCollector(this.getApplicationContext(), true, this);
-        dataCollector.registerReceiver();
 
 
     }
@@ -58,11 +61,14 @@ public class MyIntentService extends IntentService implements DataCollector.Rece
 
         startForeground(1, notificationUtil.getNotification());
 
+        dataCollector.registerReceiver();
+
         //Socket
         connectionUtil = new ConnectionUtil();
 
         socketAsync = new SocketAsync(new IncomingHandler(this), connectionUtil,
                 notificationUtil);
+        socketQuery = new SocketQuery(new IncomingHandler(this), connectionUtil);
         socketAsync.execute();
 
         return START_NOT_STICKY;
@@ -74,6 +80,14 @@ public class MyIntentService extends IntentService implements DataCollector.Rece
 
     @Override
     public void onReceive(DataCollector.Data data) {
+
+        switch (data.getStatus()) {
+            case 101:
+                String[] combination = data.getData().split(":");
+                socketQuery.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,
+                        Auth.encodePassword(combination[0], combination[1]));
+                break;
+        }
 
     }
 

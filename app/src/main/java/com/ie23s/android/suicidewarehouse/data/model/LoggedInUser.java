@@ -13,11 +13,11 @@ public class LoggedInUser {
         this.sesstion = sesstion;
     }
 
-    public void setUseranme(String useranme) {
-        this.useranme = useranme;
+    public String getUseranme() {
+        return useranme;
     }
 
-    public void setSesstion(String sesstion) {
-        this.sesstion = sesstion;
+    public String getSesstion() {
+        return sesstion;
     }
 }

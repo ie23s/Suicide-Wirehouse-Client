@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -39,8 +40,9 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        startService(MyIntentService.class);
         setContentView(R.layout.activity_login);
-        loginViewModel = ViewModelProviders.of(this, new LoginViewModelFactory())
+        loginViewModel = ViewModelProviders.of(this, new LoginViewModelFactory(getApplicationContext()))
                 .get(LoginViewModel.class);
 
         final EditText usernameEditText = findViewById(R.id.username);
@@ -144,6 +146,15 @@ public class LoginActivity extends AppCompatActivity {
     public void onPause() {
         super.onPause();
         unregisterReceiver(broadcastReceiver);
+    }
+
+    private void startService(Class<?> serviceClass) {
+        Intent intent = new Intent(this, serviceClass);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            this.startForegroundService(intent);
+        } else {
+            this.startService(intent);
+        }
     }
 }
 

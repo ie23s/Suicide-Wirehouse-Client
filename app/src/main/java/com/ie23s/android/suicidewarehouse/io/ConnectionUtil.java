@@ -17,7 +17,7 @@ import javax.crypto.spec.SecretKeySpec;
 
 @SuppressWarnings("CharsetObjectCanBeUsed")
 public class ConnectionUtil {
-    private static final String ip = "192.168.1.3";
+	private static final String ip = "192.168.1.2";
 	private static final int port = 6319;
 	private static final String publicKeyString = "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCu5z/XcYbtZG/o" +
 			"NhJalO0kDYXFxNSZby3HBMfkYQpMlxhnI4caCC2XCI4vq2RKuMWMFOJT0Sv3pY5MWEnMqCWmi75fexLa0KZy" +
@@ -81,12 +81,12 @@ public class ConnectionUtil {
 
 		System.out.println("Connection success!");
 
-		try {
-			sendData(Auth.encodeSession(13, "C93CE3A4080366B46571C9B09E205CBD7741ED07C0F936963FDE3E16BC385BD4").getBytes());
-			System.out.println(new String(getData()));
-		} catch (IOException | UnsignedExeption e) {
-			e.printStackTrace();
-		}
+//		try {
+//			sendData(Auth.encodeSession(13, "C93CE3A4080366B46571C9B09E205CBD7741ED07C0F936963FDE3E16BC385BD4").getBytes());
+//			System.out.println(new String(getData()));
+//		} catch (IOException | UnsignedExeption e) {
+//			e.printStackTrace();
+//		}
 
 		return 0;
 	}
