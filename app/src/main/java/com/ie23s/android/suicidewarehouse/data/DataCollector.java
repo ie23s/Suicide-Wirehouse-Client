@@ -1,39 +1,95 @@
 package com.ie23s.android.suicidewarehouse.data;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 
 import com.ie23s.android.suicidewarehouse.MyIntentService;
+
+import java.io.Serializable;
 
 public class DataCollector {
     private final Context context;
     private final Intent intent;
-    private boolean hasData = false;
-    private String data;
+    private final IntentFilter filter;
+    private final Receiver receiver;
+    private volatile boolean hasData = false;
+    private volatile Data data;
+    private BroadcastReceiver mScreenStateReceiver = new BroadcastReceiver() {
 
-    public DataCollector(final Context context) {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            data = (Data) intent.getSerializableExtra("DATA");
+            hasData = true;
+        }
+    };
+
+    public DataCollector(final Context context, final boolean isService) {
         this.context = context;
-        intent = new Intent(MyIntentService.ACTION_GET);
+
+        intent = new Intent(isService ? MyIntentService.ACTION_SEND : MyIntentService.ACTION_GET);
+        filter = new IntentFilter(isService ? MyIntentService.ACTION_GET : MyIntentService.ACTION_SEND);
+
+        receiver = null;
+
     }
 
-    public void sendData(String data) {
-        intent.removeExtra("DATA");
-        intent.putExtra("DATA", data);
-        context.sendBroadcast(intent);
+    public DataCollector(final Context context, final boolean isService, final Receiver receiver) {
+        this.context = context;
+
+        intent = new Intent(isService ? MyIntentService.ACTION_SEND : MyIntentService.ACTION_GET);
+        filter = new IntentFilter(isService ? MyIntentService.ACTION_GET : MyIntentService.ACTION_SEND);
+
+        this.receiver = receiver;
     }
 
-    public void putData(String data) {
-        this.data = data;
-        hasData = true;
+    public void registerReceiver() {
+        context.registerReceiver(mScreenStateReceiver, filter);
+
     }
-    
+
+    public void unregisterReceiver() {
+        context.unregisterReceiver(mScreenStateReceiver);
+
+    }
+
     public boolean hasData() {
         return hasData;
     }
 
-    public String getData() {
+    public void sendData(Data data) {
+        intent.removeExtra("DATA");
+        intent.putExtra("DATA", data);
+
+        context.sendBroadcast(intent);
+    }
+
+    public Data getData() {
         hasData = false;
         return data;
+    }
+
+    public interface Receiver {
+        void onReceive(Data data);
+    }
+
+    public static class Data implements Serializable {
+        private int status;
+        private String data;
+
+        public Data(int status, String data) {
+            this.status = status;
+            this.data = data;
+        }
+
+        public int getStatus() {
+            return status;
+        }
+
+        public String getData() {
+            return data;
+        }
     }
 
 }

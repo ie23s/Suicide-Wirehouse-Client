@@ -34,10 +34,10 @@ public class ConnectionUtil {
 	private SecretKeySpec aesKey;
 	private AESUtil aesUtil;
 	private byte[] aesSecBin;
-	private byte[] aesSecBinserver;
+	private byte[] aesSecBinServer;
 	private SocketUtil socketUtil;
 
-	public int openConnection() {
+	int openConnection() {
 		socketUtil = new SocketUtil(ip, port);
 		if (!socketUtil.openConnection())
 			return 1;
@@ -114,19 +114,19 @@ public class ConnectionUtil {
 
 	private void getServerAESSec() throws IOException, UnsignedExeption {
 		String message = socketUtil.readLine();
-		aesSecBinserver = aesUtil.decrypt(message, aesSecBin);
+		aesSecBinServer = aesUtil.decrypt(message, aesSecBin);
 	}
 
-	private void sendData(byte[] data) throws IOException {
+	public void sendData(byte[] data) throws IOException {
 		String message = aesUtil.encrypt(addPrefix(data));
 		socketUtil.sendLine(message);
 	}
 
     public byte[] getData() throws IOException, UnsignedExeption {
 		String message = socketUtil.readLine();
-		byte[] data = aesUtil.decrypt(message, aesSecBinserver);
+		byte[] data = aesUtil.decrypt(message, aesSecBinServer);
 		byte[] decoded = new byte[data.length - 16];
-		System.arraycopy(data, 0, aesSecBinserver, 0, 16);
+		System.arraycopy(data, 0, aesSecBinServer, 0, 16);
 		System.arraycopy(data, 16, decoded, 0, decoded.length);
 		return decoded;
 	}
@@ -134,4 +134,8 @@ public class ConnectionUtil {
     public void close() {
         socketUtil.close();
     }
+
+	public void sendData(String arg) throws IOException {
+		sendData(arg.getBytes());
+	}
 }

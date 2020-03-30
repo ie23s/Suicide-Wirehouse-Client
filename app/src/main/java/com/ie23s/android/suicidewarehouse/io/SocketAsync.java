@@ -1,15 +1,13 @@
 package com.ie23s.android.suicidewarehouse.io;
 
-import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Message;
 
-import com.ie23s.android.suicidewarehouse.MyIntentService;
+import com.ie23s.android.suicidewarehouse.data.DataCollector;
 import com.ie23s.android.suicidewarehouse.utils.NotificationUtil;
 
 import java.io.IOException;
-import java.net.Socket;
 
 public class SocketAsync extends AsyncTask<Void, Integer, Void> {
 
@@ -35,40 +33,23 @@ public class SocketAsync extends AsyncTask<Void, Integer, Void> {
             return null;
         }
 
-        Intent intent = new Intent(MyIntentService.ACTION_SEND);
         for (boolean c = true; c; ) {
+            DataCollector.Data data;
             try {
-                String data = new String(connectionUtil.getData());
-                intent.putExtra("SERVER_STATUS", "OK");
-                intent.putExtra("VALUE", data);
+                data = new DataCollector.Data(200, new String(connectionUtil.getData()));
             } catch (IOException e) {
-                intent.putExtra("SERVER_STATUS", "FATAL_ERROR");
+                data = new DataCollector.Data(500, null);
                 connectionUtil.close();
                 c = false;
             } catch (UnsignedExeption e) {
-                intent.putExtra("SERVER_STATUS", "ERROR_" + e.getCode());
+                data = new DataCollector.Data(501, "ERROR_" + e.getCode());
             }
 
             Message threadMessage = new Message();
-            threadMessage.obj = intent;
+            threadMessage.obj = data;
             threadHandler.sendMessage(threadMessage);
 
         }
         return null;
-    }
-
-    private void send(Socket socket) {
-
-    }
-
-    protected void onProgressUpdate(Integer... values) {
-        super.onProgressUpdate(values);
-    }
-
-    @Override
-    protected void onPostExecute(Void result) {
-        super.onPostExecute(result);
-
-
     }
 }

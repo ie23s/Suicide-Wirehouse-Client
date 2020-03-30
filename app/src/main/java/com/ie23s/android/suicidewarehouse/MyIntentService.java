@@ -1,13 +1,11 @@
 package com.ie23s.android.suicidewarehouse;
 
 import android.app.IntentService;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Handler;
 import android.os.Message;
 
+import com.ie23s.android.suicidewarehouse.data.DataCollector;
 import com.ie23s.android.suicidewarehouse.io.ConnectionUtil;
 import com.ie23s.android.suicidewarehouse.io.SocketAsync;
 import com.ie23s.android.suicidewarehouse.utils.NotificationUtil;
@@ -21,25 +19,16 @@ import java.lang.ref.WeakReference;
  * TODO: Customize class - update intent actions, extra parameters and static
  * helper methods.
  */
-public class MyIntentService extends IntentService {
+public class MyIntentService extends IntentService implements DataCollector.Receiver {
     // TODO: Rename actions, choose action names that describe tasks that this
     // IntentService can perform, e.g. ACTION_FETCH_NEW_ITEMS
     public static final String ACTION_GET = "com.ie23s.android.suicidewarehouse.action.GET";
     public static final String ACTION_SEND = "com.ie23s.android.suicidewarehouse.action.SEND";
-    public static final String CHANNEL_ID = "ForegroundServiceChannels";
 
     NotificationUtil notificationUtil;
     ConnectionUtil connectionUtil;
     SocketAsync socketAsync;
-
-    BroadcastReceiver mScreenStateReceiver = new BroadcastReceiver() {
-
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            notificationUtil.updateNotify(intent.getStringExtra("name"));
-            //startForeground(1,notificationUtil.getNotification());
-        }
-    };
+    DataCollector dataCollector;
 
     public MyIntentService() {
         super("MyIntentService");
@@ -48,31 +37,33 @@ public class MyIntentService extends IntentService {
     public void onCreate() {
         super.onCreate();
 
-        IntentFilter filter = new IntentFilter(ACTION_GET);
-        registerReceiver(mScreenStateReceiver, filter);
+        dataCollector = new DataCollector(this.getApplicationContext(), true, this);
+        dataCollector.registerReceiver();
+
 
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        unregisterReceiver(mScreenStateReceiver);
+        dataCollector.unregisterReceiver();
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-
+        //Notification
         notificationUtil = new NotificationUtil(this,
                "TAG!!!", "TEST_NOTIFY", 1);
         notificationUtil.create("Test", "Connecting...");
 
+        startForeground(1, notificationUtil.getNotification());
+
+        //Socket
         connectionUtil = new ConnectionUtil();
 
         socketAsync = new SocketAsync(new IncomingHandler(this), connectionUtil,
                 notificationUtil);
         socketAsync.execute();
-
-        startForeground(1, notificationUtil.getNotification());
 
         return START_NOT_STICKY;
     }
@@ -81,6 +72,12 @@ public class MyIntentService extends IntentService {
     protected void onHandleIntent(Intent intent) {
     }
 
+    @Override
+    public void onReceive(DataCollector.Data data) {
+
+    }
+
+
     static class IncomingHandler extends Handler {
         private final WeakReference<MyIntentService> mService;
 
@@ -88,11 +85,12 @@ public class MyIntentService extends IntentService {
             mService = new WeakReference<>(service);
         }
         @Override
-        public void handleMessage( Message msg)
+        public void handleMessage(Message msg)
         {
-            MyIntentService service = mService.get();
-            if (service != null) {
-                service.sendBroadcast((Intent) msg.obj);
+            DataCollector dataCollector = mService.get().dataCollector;
+            if (dataCollector != null) {
+
+                dataCollector.sendData((DataCollector.Data) msg.obj);
 
                 super.handleMessage(msg);
             }
