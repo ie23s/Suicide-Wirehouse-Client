@@ -3,9 +3,6 @@ package com.ie23s.android.suicidewarehouse.utils;
 import org.junit.Test;
 
 import java.util.Arrays;
-import java.util.logging.Logger;
-
-import static org.junit.Assert.*;
 
 public class ByteUtilsTest {
     private int l1 = 1234;
@@ -18,11 +15,11 @@ public class ByteUtilsTest {
 
     @Test
     public void intToBytes() throws Exception {
-        if(!Arrays.equals(b1, ByteUtils.intToBytes(l1)))
+        if (!Arrays.equals(b1, ByteUtils.intToBytes(l1)))
             throw new Exception("First int");
-        if(!Arrays.equals(b2, ByteUtils.intToBytes(l2)))
+        if (!Arrays.equals(b2, ByteUtils.intToBytes(l2)))
             throw new Exception("Second int");
-        if(!Arrays.equals(b3, ByteUtils.intToBytes(l3)))
+        if (!Arrays.equals(b3, ByteUtils.intToBytes(l3)))
             throw new Exception("Third int");
 
         System.out.println(Arrays.toString(b1));
@@ -32,11 +29,11 @@ public class ByteUtilsTest {
 
     @Test
     public void bytesToInt() throws Exception {
-        if(ByteUtils.bytesToInt(b1)!= l1 )
+        if (ByteUtils.bytesToInt(b1) != l1)
             throw new Exception("First array");
-        if(ByteUtils.bytesToInt(b2) != l2 )
+        if (ByteUtils.bytesToInt(b2) != l2)
             throw new Exception("Second array");
-        if(ByteUtils.bytesToInt(b3) != l3 )
+        if (ByteUtils.bytesToInt(b3) != l3)
             throw new Exception("Third array");
         System.out.println(ByteUtils.bytesToInt(b1));
         System.out.println(ByteUtils.bytesToInt(b2));

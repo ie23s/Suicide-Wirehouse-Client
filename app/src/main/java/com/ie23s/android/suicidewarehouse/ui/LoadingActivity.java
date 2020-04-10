@@ -17,8 +17,8 @@ public class LoadingActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_loading);
-        if (isServiceRunning(MyIntentService.class))
-            startService(MyIntentService.class);
+        //if (!isServiceRunning(MyIntentService.class))
+        startService(MyIntentService.class);
     }
 
     private void startService(Class<?> serviceClass) {

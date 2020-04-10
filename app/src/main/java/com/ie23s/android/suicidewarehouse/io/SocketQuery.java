@@ -43,9 +43,9 @@ public class SocketQuery extends AsyncTask<String, Integer, Void> {
             connectionUtil.sendData(args[0]);
         } catch (IOException e) {
             handleMessage(new DataCollector.Data(500, null));
-        } catch (ArrayIndexOutOfBoundsException e) {
-            return null;
+        } catch (ArrayIndexOutOfBoundsException ignored) {
         }
+
         return null;
     }
 

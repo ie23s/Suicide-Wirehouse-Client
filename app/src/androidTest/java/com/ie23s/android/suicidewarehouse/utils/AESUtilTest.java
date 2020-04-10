@@ -6,8 +6,6 @@ import org.junit.Test;
 
 import javax.crypto.spec.SecretKeySpec;
 
-import static org.junit.Assert.*;
-
 public class AESUtilTest {
 
     @Test

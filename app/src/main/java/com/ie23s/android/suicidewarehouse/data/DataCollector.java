@@ -13,9 +13,19 @@ public class DataCollector {
     private final Context context;
     private final Intent intent;
     private final IntentFilter filter;
-    private final Receiver receiver;
+    private Receiver receiver;
     private volatile boolean hasData = false;
     private volatile Data data;
+    private BroadcastReceiver mScreenStateReceiver = new BroadcastReceiver() {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            data = (Data) intent.getSerializableExtra("DATA");
+            hasData = true;
+            if (receiver != null)
+                receiver.onReceive(data);
+        }
+    };
 
     public DataCollector(final Context context, final boolean isService) {
         this.context = context;
@@ -42,12 +52,22 @@ public class DataCollector {
     }
 
     public void unregisterReceiver() {
-        context.unregisterReceiver(mScreenStateReceiver);
+        try {
+            context.unregisterReceiver(mScreenStateReceiver);
+        } catch (Exception ignored) {
+        }
 
     }
 
     public boolean hasData() {
         return hasData;
+    }
+
+    @SuppressWarnings("StatementWithEmptyBody")
+    public Data next() {
+        while (!hasData) ;
+        hasData = false;
+        return data;
     }
 
     public void sendData(Data data) {
@@ -62,17 +82,9 @@ public class DataCollector {
         return data;
     }
 
-    private BroadcastReceiver mScreenStateReceiver = new BroadcastReceiver() {
-
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            data = (Data) intent.getSerializableExtra("DATA");
-            hasData = true;
-            if (receiver != null)
-                receiver.onReceive(data);
-            System.out.println("sdf" + data.getData());
-        }
-    };
+    public void setReceiver(Receiver receiver) {
+        this.receiver = receiver;
+    }
 
     public interface Receiver {
         void onReceive(Data data);

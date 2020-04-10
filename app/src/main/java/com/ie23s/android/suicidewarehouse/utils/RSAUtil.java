@@ -3,7 +3,12 @@ package com.ie23s.android.suicidewarehouse.utils;
 import android.util.Base64;
 
 import java.io.UnsupportedEncodingException;
-import java.security.*;
+import java.security.InvalidKeyException;
+import java.security.KeyFactory;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
+import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
@@ -111,6 +116,7 @@ public class RSAUtil {
         cipher.init(ENCRYPT_MODE, publicKey);
         return cipher;
     }
+
     private static Cipher getDeryptionCipher(PrivateKey privateKey) throws NoSuchPaddingException, NoSuchAlgorithmException, NoSuchProviderException,
             InvalidKeyException {
         Cipher cipher = Cipher.getInstance(CIPHER_RSA_WITH_PADDING, PROVIDER);
@@ -136,8 +142,7 @@ public class RSAUtil {
     }
 
     /**
-
-    /**
+     * /**
      * Create and return the PublicKey object from the public key bytes
      */
     private static PublicKey getPublicKey(byte[] publicKeyBytes) throws NoSuchAlgorithmException, InvalidKeySpecException {

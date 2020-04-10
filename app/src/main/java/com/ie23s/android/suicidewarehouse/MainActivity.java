@@ -12,6 +12,7 @@ import com.ie23s.android.suicidewarehouse.utils.SettingsUtil;
 public class MainActivity extends AppCompatActivity implements LocationListener {
     private TextView textView1;
     private boolean s = true;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,7 +35,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     }
 
     @Override
-    public void onStatusChanged(String provider, int status, Bundle extras) {}
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+    }
 
     @Override
     public void onProviderEnabled(String provider) {

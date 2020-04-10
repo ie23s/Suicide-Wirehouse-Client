@@ -37,6 +37,7 @@ public class MyIntentService extends IntentService implements DataCollector.Rece
     public MyIntentService() {
         super("MyIntentService");
     }
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -56,7 +57,7 @@ public class MyIntentService extends IntentService implements DataCollector.Rece
     public int onStartCommand(Intent intent, int flags, int startId) {
         //Notification
         notificationUtil = new NotificationUtil(this,
-               "TAG!!!", "TEST_NOTIFY", 1);
+                "TAG!!!", "TEST_NOTIFY", 1);
         notificationUtil.create("Test", "Connecting...");
 
         startForeground(1, notificationUtil.getNotification());
@@ -68,7 +69,6 @@ public class MyIntentService extends IntentService implements DataCollector.Rece
 
         socketAsync = new SocketAsync(new IncomingHandler(this), connectionUtil,
                 notificationUtil);
-        socketQuery = new SocketQuery(new IncomingHandler(this), connectionUtil);
         socketAsync.execute();
 
         return START_NOT_STICKY;
@@ -80,6 +80,7 @@ public class MyIntentService extends IntentService implements DataCollector.Rece
 
     @Override
     public void onReceive(DataCollector.Data data) {
+        socketQuery = new SocketQuery(new IncomingHandler(this), connectionUtil);
 
         switch (data.getStatus()) {
             case 101:
@@ -98,9 +99,9 @@ public class MyIntentService extends IntentService implements DataCollector.Rece
         IncomingHandler(MyIntentService service) {
             mService = new WeakReference<>(service);
         }
+
         @Override
-        public void handleMessage(Message msg)
-        {
+        public void handleMessage(Message msg) {
             DataCollector dataCollector = mService.get().dataCollector;
             if (dataCollector != null) {
 
